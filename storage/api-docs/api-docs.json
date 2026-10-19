@@ -1,0 +1,1014 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Mobile IoT API",
+        "description": "API Documentation for Mobile IoT Project",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost/mobileiot/",
+            "description": "Local Server"
+        }
+    ],
+    "paths": {
+        "/api/admin/users/role": {
+            "patch": {
+                "tags": [
+                    "Admin Management"
+                ],
+                "summary": "เปลี่ยน Role ผู้ใช้งาน (เฉพาะ Superadmin)",
+                "description": "อัปเดตสิทธิ์ (Role) ของผู้ใช้งาน โดยผู้ทำรายการต้องมี Role เป็น superadmin เท่านั้น",
+                "operationId": "95afbdff54d6b3d7c070c24743aefa94",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user_id",
+                                    "role"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "description": "ID ของผู้ใช้ที่ต้องการเปลี่ยน Role",
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "role": {
+                                        "description": "Role ใหม่ที่ต้องการกำหนด",
+                                        "type": "string",
+                                        "example": "admin",
+                                        "enum": [
+                                            "superadmin",
+                                            "admin",
+                                            "user"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "เปลี่ยน Role สำเร็จ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "เปลี่ยน Role ของผู้ใช้เรียบร้อยแล้ว"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "username": {
+                                                    "type": "string",
+                                                    "example": "johndoe"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "admin"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ไม่อนุญาตให้แก้ไข Role ของตนเอง"
+                    },
+                    "403": {
+                        "description": "ไม่มีสิทธิ์เข้าถึง (ต้องเป็น superadmin เท่านั้น)"
+                    },
+                    "404": {
+                        "description": "ไม่พบผู้ใช้ที่ต้องการแก้ไข"
+                    },
+                    "422": {
+                        "description": "ข้อมูล Role ไม่ถูกต้องตาม ENUM"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "เข้าสู่ระบบ (Login)",
+                "description": "เข้าสู่ระบบด้วย Username หรือ Email เพื่อรับ JWT Token",
+                "operationId": "a3b306d14572d1f4bd6c064b3233e7b8",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "login",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "login": {
+                                        "description": "Username หรือ Email",
+                                        "type": "string",
+                                        "example": "johndoe"
+                                    },
+                                    "password": {
+                                        "description": "รหัสผ่าน",
+                                        "type": "string",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "เข้าสู่ระบบสำเร็จ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "เข้าสู่ระบบสำเร็จ"
+                                        },
+                                        "access_token": {
+                                            "type": "string",
+                                            "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                                        },
+                                        "token_type": {
+                                            "type": "string",
+                                            "example": "bearer"
+                                        },
+                                        "expires_in": {
+                                            "type": "integer",
+                                            "example": 3600
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "username": {
+                                                    "type": "string",
+                                                    "example": "johndoe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "john@example.com"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "user"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "ข้อมูลไม่ถูกต้อง"
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "ออกจากระบบ (Logout)",
+                "description": "ทำลาย JWT Token ปัจจุบัน (จำเป็นต้องแนบ Bearer Token ใน Header)",
+                "operationId": "fe8f3429cd6979b3b4517e186505f9f9",
+                "responses": {
+                    "200": {
+                        "description": "ออกจากระบบสำเร็จ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "ออกจากระบบสำเร็จ"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "ไม่สามารถออกจากระบบได้"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/refresh": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "ต่ออายุ Token (Refresh Token)",
+                "description": "ขอ JWT Token ใหม่แทน Token เดิม (จำเป็นต้องแนบ Bearer Token ใน Header)",
+                "operationId": "2c27d311a2876560fcb5a754b556cdc5",
+                "responses": {
+                    "200": {
+                        "description": "รีเฟรชโทเค็นสำเร็จ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "รีเฟรชโทเค็นสำเร็จ"
+                                        },
+                                        "access_token": {
+                                            "type": "string",
+                                            "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                                        },
+                                        "token_type": {
+                                            "type": "string",
+                                            "example": "bearer"
+                                        },
+                                        "expires_in": {
+                                            "type": "integer",
+                                            "example": 3600
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "ไม่สามารถรีเฟรชโทเค็นได้"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "สมัครสมาชิก (Register)",
+                "description": "สมัครสมาชิกใหม่ในระบบ",
+                "operationId": "8a56853624e025573120a09a4c75d468",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "email",
+                                    "password",
+                                    "password_confirmation",
+                                    "first_name",
+                                    "last_name"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "example": "newuser123"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "newuser@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "first_name": {
+                                        "type": "string",
+                                        "example": "John"
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "example": "Doe"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "สมัครสมาชิกสำเร็จ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "สมัครสมาชิกสำเร็จ"
+                                        },
+                                        "user_id": {
+                                            "type": "integer",
+                                            "example": 2
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "ข้อมูลไม่ถูกต้อง หรือ Email/Username ซ้ำซ้อน"
+                    },
+                    "500": {
+                        "description": "ข้อผิดพลาดจากเซิร์ฟเวอร์หรือฐานข้อมูล"
+                    }
+                }
+            }
+        },
+        "/api/profile/upload": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "อัปโหลดรูปโปรไฟล์",
+                "description": "อัปโหลดรูปภาพโปรไฟล์ของผู้ใช้งานตาม Token ปัจจุบัน",
+                "operationId": "7967cf3e3dbd948efd60c23a24a0a3d5",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "profile_image"
+                                ],
+                                "properties": {
+                                    "profile_image": {
+                                        "description": "ไฟล์รูปภาพ (jpg, jpeg, png ไม่เกิน 2MB)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "อัปโหลดสำเร็จ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "อัปโหลดรูปโปรไฟล์สำเร็จ"
+                                        },
+                                        "image_url": {
+                                            "type": "string",
+                                            "example": "http://localhost/mobileiot/storage/profiles/profile_1_1717000000.png"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token ไม่ถูกต้องหรือหมดอายุ"
+                    },
+                    "422": {
+                        "description": "ไฟล์ไม่ตรงเงื่อนไขหรือไม่ได้แนบไฟล์"
+                    },
+                    "500": {
+                        "description": "เกิดข้อผิดพลาด"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/profile/image": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "ดึงรูปโปรไฟล์ตาม Token",
+                "description": "ดึง URL รูปโปรไฟล์ของผู้ใช้งานจาก Bearer Token",
+                "operationId": "c9a5a0b329d7fab5042619b540c7236a",
+                "responses": {
+                    "200": {
+                        "description": "ดึงข้อมูลสำเร็จ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "image_url": {
+                                            "type": "string",
+                                            "example": "http://localhost/mobileiot/storage/profiles/profile_1_1717000000.png",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token ไม่ถูกต้องหรือหมดอายุ"
+                    },
+                    "404": {
+                        "description": "ไม่พบผู้ใช้"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/resetpassword": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "เปลี่ยนรหัสผ่าน (Change Password)",
+                "description": "เปลี่ยนรหัสผ่านของผู้ใช้งานตาม Token ปัจจุบัน (ต้องระบุรหัสผ่านเดิมและรหัสผ่านใหม่)",
+                "operationId": "dc5090ca4e0cdc9c65fda4d5cb1b24db",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "current_password",
+                                    "new_password",
+                                    "new_password_confirmation"
+                                ],
+                                "properties": {
+                                    "current_password": {
+                                        "description": "รหัสผ่านเดิม",
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "new_password": {
+                                        "description": "รหัสผ่านใหม่ (อย่างน้อย 6 ตัวอักษร)",
+                                        "type": "string",
+                                        "example": "newpassword456"
+                                    },
+                                    "new_password_confirmation": {
+                                        "description": "ยืนยันรหัสผ่านใหม่",
+                                        "type": "string",
+                                        "example": "newpassword456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "เปลี่ยนรหัสผ่านสำเร็จ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "เปลี่ยนรหัสผ่านสำเร็จ กรุณาเข้าสู่ระบบใหม่อีกครั้ง"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "รหัสผ่านเดิมไม่ถูกต้อง หรือ รหัสใหม่ซ้ำกับรหัสเดิม"
+                    },
+                    "401": {
+                        "description": "Token ไม่ถูกต้องหรือหมดอายุ"
+                    },
+                    "422": {
+                        "description": "ข้อมูลที่ส่งมาไม่ถูกต้องตามเงื่อนไข Validation"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/resetpassword/direct": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "รีเซ็ตรหัสผ่านตรง (ไม่ต้องใช้ Token)",
+                "description": "เปลี่ยนรหัสผ่านโดยระบุ Username หรือ Email พร้อมรหัสผ่านเดิมเพื่อตั้งรหัสผ่านใหม่ทันที",
+                "operationId": "a7aa5dad2c7651eb83452692450ca14e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "login",
+                                    "current_password",
+                                    "new_password",
+                                    "new_password_confirmation"
+                                ],
+                                "properties": {
+                                    "login": {
+                                        "description": "Username หรือ Email",
+                                        "type": "string",
+                                        "example": "johndoe"
+                                    },
+                                    "current_password": {
+                                        "description": "รหัสผ่านเดิม",
+                                        "type": "string",
+                                        "example": "oldpass123"
+                                    },
+                                    "new_password": {
+                                        "description": "รหัสผ่านใหม่ (อย่างน้อย 6 ตัวอักษร)",
+                                        "type": "string",
+                                        "example": "newpass456"
+                                    },
+                                    "new_password_confirmation": {
+                                        "description": "ยืนยันรหัสผ่านใหม่",
+                                        "type": "string",
+                                        "example": "newpass456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "เปลี่ยนรหัสผ่านสำเร็จ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "รีเซ็ตรหัสผ่านสำเร็จ สามารถเข้าสู่ระบบด้วยรหัสผ่านใหม่ได้ทันที"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "รหัสผ่านใหม่ซ้ำกับรหัสผ่านเดิม"
+                    },
+                    "401": {
+                        "description": "รหัสผ่านเดิมไม่ถูกต้อง"
+                    },
+                    "404": {
+                        "description": "ไม่พบบัญชีผู้ใช้"
+                    },
+                    "422": {
+                        "description": "ข้อมูลไม่ถูกต้องตาม Validation"
+                    }
+                }
+            }
+        },
+        "/api/profile/update": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "แก้ไขข้อมูลผู้ใช้งาน (Update Profile)",
+                "description": "แก้ไขข้อมูลส่วนตัวของผู้ใช้งานตาม Token ปัจจุบัน (ชื่อ, นามสกุล, username, email)",
+                "operationId": "b8423619abf3ba75fe6142aed29a8eae",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "first_name",
+                                    "last_name",
+                                    "username",
+                                    "email"
+                                ],
+                                "properties": {
+                                    "first_name": {
+                                        "description": "ชื่อจริง",
+                                        "type": "string",
+                                        "example": "John"
+                                    },
+                                    "last_name": {
+                                        "description": "นามสกุล",
+                                        "type": "string",
+                                        "example": "Doe"
+                                    },
+                                    "username": {
+                                        "description": "Username ใหม่",
+                                        "type": "string",
+                                        "example": "johndoe_new"
+                                    },
+                                    "email": {
+                                        "description": "Email ใหม่",
+                                        "type": "string",
+                                        "example": "john_new@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "แก้ไขข้อมูลสำเร็จ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "อัปเดตข้อมูลผู้ใช้เรียบร้อยแล้ว"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "username": {
+                                                    "type": "string",
+                                                    "example": "johndoe_new"
+                                                },
+                                                "first_name": {
+                                                    "type": "string",
+                                                    "example": "John"
+                                                },
+                                                "last_name": {
+                                                    "type": "string",
+                                                    "example": "Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "john_new@example.com"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "user"
+                                                },
+                                                "profile_image": {
+                                                    "type": "string",
+                                                    "example": "profiles/profile_1_1717000000.png",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token ไม่ถูกต้องหรือหมดอายุ"
+                    },
+                    "404": {
+                        "description": "ไม่พบข้อมูลผู้ใช้"
+                    },
+                    "422": {
+                        "description": "Username หรือ Email ซ้ำกับผู้อื่น หรือข้อมูลไม่ถูกต้องตามเงื่อนไข"
+                    },
+                    "500": {
+                        "description": "เกิดข้อผิดพลาดในการบันทึกข้อมูล"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/sensor/data": {
+            "get": {
+                "tags": [
+                    "Sensor"
+                ],
+                "summary": "ดึงข้อมูล Sensor",
+                "description": "ดึงข้อมูล Temperature และ Humidity จากฐานข้อมูล",
+                "operationId": "27c5ed51cc94cca03f2f3b03d4ebaa2d",
+                "responses": {
+                    "200": {
+                        "description": "ดึงข้อมูลสำเร็จ"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Sensor"
+                ],
+                "summary": "รับข้อมูล Sensor",
+                "description": "รับข้อมูล Temperature และ Humidity จาก Arduino ผ่าน Python",
+                "operationId": "e968697090b282324ce42c493fbf0841",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "temperature",
+                                    "humidity"
+                                ],
+                                "properties": {
+                                    "temperature": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 22.7
+                                    },
+                                    "humidity": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 52
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "บันทึกข้อมูลสำเร็จ"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "ข้อมูลไม่ถูกต้อง"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/sensor/latest": {
+            "get": {
+                "tags": [
+                    "Sensor"
+                ],
+                "summary": "ดึงข้อมูล Sensor ล่าสุด",
+                "description": "ดึงค่าข้อมูล Sensor ล่าสุดเพียงรายการเดียว",
+                "operationId": "b8060b3d0c9be8052a7fcd5457e21544",
+                "responses": {
+                    "200": {
+                        "description": "ดึงข้อมูลล่าสุดสำเร็จ"
+                    },
+                    "404": {
+                        "description": "ไม่พบข้อมูล"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/sensor/date": {
+            "get": {
+                "tags": [
+                    "Sensor"
+                ],
+                "summary": "ดึงข้อมูล Sensor ตามวันที่",
+                "description": "ดึงข้อมูล Sensor โดยระบุวันที่ (รูปแบบ YYYY-MM-DD)",
+                "operationId": "b14f7278dec606be33b124393bbd8093",
+                "parameters": [
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "description": "วันที่ต้องการค้นหา (เช่น 2026-09-03)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ดึงข้อมูลสำเร็จ"
+                    },
+                    "404": {
+                        "description": "ไม่พบข้อมูล"
+                    },
+                    "422": {
+                        "description": "รูปแบบวันที่ไม่ถูกต้อง"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/relay/control": {
+            "post": {
+                "tags": [
+                    "Relay"
+                ],
+                "summary": "สั่งอัปเดตสถานะ Relay (0 หรือ 1)",
+                "operationId": "3bc7b78fc485474c913bf655e02fc77b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "command"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "ชื่อของอุปกรณ์",
+                                        "type": "string",
+                                        "example": "relay_1"
+                                    },
+                                    "command": {
+                                        "description": "0 = ปิด, 1 = เปิด",
+                                        "type": "string",
+                                        "example": "1",
+                                        "enum": [
+                                            "0",
+                                            "1"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "อัปเดตคำสั่งสำเร็จ"
+                    },
+                    "400": {
+                        "description": "ข้อมูลไม่ถูกต้อง"
+                    },
+                    "404": {
+                        "description": "ไม่พบอุปกรณ์"
+                    }
+                }
+            }
+        },
+        "/api/relay/status": {
+            "get": {
+                "tags": [
+                    "Relay"
+                ],
+                "summary": "ดึงสถานะคำสั่ง Relay ปัจจุบัน",
+                "operationId": "61004665816bb3eac8ef71c1429da1b6",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "ชื่ออุปกรณ์ (ค่าเริ่มต้นคือ relay_1)",
+                        "required": false,
+                        "example": "relay_1"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ดึงข้อมูลสำเร็จ"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Admin Management",
+            "description": "Admin Management"
+        },
+        {
+            "name": "Authentication",
+            "description": "Authentication"
+        },
+        {
+            "name": "Sensor",
+            "description": "Sensor"
+        },
+        {
+            "name": "Relay",
+            "description": "Relay"
+        }
+    ]
+}
